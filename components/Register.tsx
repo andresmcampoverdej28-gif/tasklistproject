@@ -1,12 +1,13 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native'
-import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
+import React from 'react'
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
 interface RegisterProps {
   onNavigateToLogin: () => void
+  onRegister: () => void
 }
 
-const Register = ({ onNavigateToLogin }: RegisterProps) => {
+const Register = ({ onNavigateToLogin, onRegister }: RegisterProps) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
@@ -69,7 +70,7 @@ const Register = ({ onNavigateToLogin }: RegisterProps) => {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.registerButton}>
+        <TouchableOpacity style={styles.registerButton} onPress={onRegister}>
           <Text style={styles.registerButtonText}>Crear Cuenta</Text>
         </TouchableOpacity>
 

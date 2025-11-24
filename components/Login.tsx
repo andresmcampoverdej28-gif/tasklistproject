@@ -1,12 +1,13 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native'
-import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
+import React from 'react'
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
 interface LoginProps {
   onNavigateToRegister: () => void
+  onLogin: () => void
 }
 
-const Login = ({ onNavigateToRegister }: LoginProps) => {
+const Login = ({ onNavigateToRegister, onLogin }: LoginProps) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -47,7 +48,7 @@ const Login = ({ onNavigateToRegister }: LoginProps) => {
           <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.loginButton}>
+        <TouchableOpacity style={styles.loginButton} onPress={onLogin}>
           <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
         </TouchableOpacity>
 
