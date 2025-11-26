@@ -1,5 +1,5 @@
 import { ThemeId } from '@/lib/constants/theme'
-import { useAppTheme } from '@/lib/hooks/useAppTheme'; // Cambio importante aquí
+import { useAppTheme } from '@/lib/hooks/useAppTheme'
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React from 'react'
@@ -7,7 +7,7 @@ import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } fr
 
 const Settings = () => {
   const router = useRouter()
-  const { currentTheme, themeId, setTheme } = useAppTheme() // Usamos useAppTheme en lugar de useContext
+  const { currentTheme, themeId, setTheme } = useAppTheme()
 
   const handleLogout = () => {
     router.replace('/')
@@ -37,6 +37,12 @@ const Settings = () => {
       name: 'Plants vs Zombies', 
       icon: 'leaf',
       colors: ['#87CEEB', '#4CAF50', '#8BC34A']
+    },
+    { 
+      id: 'sonic', 
+      name: 'Sonic', 
+      icon: 'flash',
+      colors: ['#1E3A8A', '#FF0000', '#FBBF24']
     },
   ]
 
@@ -91,10 +97,11 @@ const Settings = () => {
           </View>
         </View>
 
+        {/* SECCIÓN CUENTA - BOTONES MÁS REDONDEADOS */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: currentTheme.textSecondary }]}>CUENTA</Text>
           
-          <TouchableOpacity style={[styles.option, { backgroundColor: currentTheme.cardBackground, borderBottomWidth: 1, borderBottomColor: currentTheme.divider }]}>
+          <TouchableOpacity style={[styles.option, { backgroundColor: currentTheme.cardBackground }]}>
             <View style={styles.optionLeft}>
               <Ionicons name="person-outline" size={24} color={currentTheme.primary} />
               <Text style={[styles.optionText, { color: currentTheme.text }]}>Perfil</Text>
@@ -111,6 +118,7 @@ const Settings = () => {
           </TouchableOpacity>
         </View>
 
+        {/* SECCIÓN PREFERENCIAS - BOTONES MÁS REDONDEADOS */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: currentTheme.textSecondary }]}>PREFERENCIAS</Text>
           
@@ -123,10 +131,11 @@ const Settings = () => {
           </TouchableOpacity>
         </View>
 
+        {/* SECCIÓN INFORMACIÓN - BOTONES MÁS REDONDEADOS */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: currentTheme.textSecondary }]}>INFORMACIÓN</Text>
           
-          <TouchableOpacity style={[styles.option, { backgroundColor: currentTheme.cardBackground, borderBottomWidth: 1, borderBottomColor: currentTheme.divider }]}>
+          <TouchableOpacity style={[styles.option, { backgroundColor: currentTheme.cardBackground }]}>
             <View style={styles.optionLeft}>
               <Ionicons name="help-circle-outline" size={24} color={currentTheme.primary} />
               <Text style={[styles.optionText, { color: currentTheme.text }]}>Ayuda</Text>
@@ -143,6 +152,7 @@ const Settings = () => {
           </TouchableOpacity>
         </View>
 
+        {/* BOTÓN DE CERRAR SESIÓN - MÁS REDONDEADO */}
         <TouchableOpacity 
           style={[styles.logoutButton, { backgroundColor: currentTheme.cardBackground }]} 
           onPress={handleLogout}
@@ -161,6 +171,8 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 24,
+    borderBottomLeftRadius: 24, // Más redondeado
+    borderBottomRightRadius: 24, // Más redondeado
   },
   title: {
     fontSize: 32,
@@ -176,19 +188,19 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 13,
     fontWeight: '600',
-    marginBottom: 8,
+    marginBottom: 12,
     marginLeft: 16,
   },
   themesContainer: {
-    borderRadius: 12,
+    borderRadius: 20, // Más redondeado
     padding: 16,
     gap: 12,
   },
   themeOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 12,
+    padding: 16,
+    borderRadius: 16, // Más redondeado
     borderWidth: 2,
     borderColor: 'transparent',
     position: 'relative',
@@ -201,7 +213,7 @@ const styles = StyleSheet.create({
   colorBlock: {
     width: 24,
     height: 24,
-    borderRadius: 6,
+    borderRadius: 8, // Más redondeado
   },
   themeInfo: {
     flexDirection: 'row',
@@ -215,16 +227,26 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     position: 'absolute',
-    right: 12,
+    right: 16,
     top: '50%',
     marginTop: -12,
   },
+  // BOTONES MÁS REDONDEADOS Y ESTÉTICOS
   option: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    marginBottom: 1,
+    padding: 18, // Más padding
+    marginBottom: 8,
+    borderRadius: 16, // Mucho más redondeado
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   optionLeft: {
     flexDirection: 'row',
@@ -233,17 +255,27 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
+    fontWeight: '500',
   },
+  // BOTÓN DE CERRAR SESIÓN MÁS REDONDEADO
   logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 16,
+    padding: 18,
     marginHorizontal: 16,
     marginTop: 32,
     marginBottom: 32,
-    borderRadius: 12,
+    borderRadius: 16, // Más redondeado
     gap: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   logoutText: {
     fontSize: 16,

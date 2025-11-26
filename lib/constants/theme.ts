@@ -138,11 +138,48 @@ export const pvzTheme = {
   }
 };
 
+export const sonicTheme = {
+  id: 'sonic',
+  name: 'Sonic The Hedgehog',
+
+  background: '#1E3A8A', // Azul oscuro como la noche
+  surface: '#3B82F6', // Azul Sonic
+
+  primary: '#FF0000', // Rojo de los zapatos de Sonic
+  secondary: '#FBBF24', // Amarillo de los anillos
+
+  success: '#10B981', // Verde esmeralda
+  warning: '#F59E0B', // Naranja de alerta
+  error: '#EF4444', // Rojo de daño
+
+  text: '#FFFFFF',
+  textSecondary: '#BFDBFE',
+
+  border: '#60A5FA',
+  divider: '#3B82F6',
+
+  tabBarBackground: '#1E3A8A',
+  tabBarBorder: '#60A5FA',
+
+  cardBackground: '#2563EB',
+  cardShadow: 'rgba(255, 0, 0, 0.3)',
+
+  badgeColors: {
+    blue: '#3B82F6',
+    red: '#FF0000',
+    orange: '#F59E0B',
+    green: '#10B981',
+    purple: '#8B5CF6',
+  }
+};
+
+// Actualizar el objeto themes
 export const themes = {
   light: lightTheme,
   dark: darkTheme,
   brawlstars: brawlStarsTheme,
   pvz: pvzTheme,
+  sonic: sonicTheme, // ← Nuevo tema agregado
 };
 
 export type ThemeId = keyof typeof themes;
