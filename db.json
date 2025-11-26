@@ -7,14 +7,6 @@
       "priority": "important",
       "completed": false,
       "createdAt": "2024-11-24T10:00:00.000Z"
-    },
-    {
-      "id": "2",
-      "title": "Revisar correos",
-      "description": "Responder correos pendientes del trabajo",
-      "priority": "not-important",
-      "completed": false,
-      "createdAt": "2024-11-24T11:00:00.000Z"
     }
   ]
 }

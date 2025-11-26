@@ -1,18 +1,8 @@
-import { Ionicons } from '@expo/vector-icons'
-import React, { useState, useEffect } from 'react'
-import { 
-  SafeAreaView, 
-  ScrollView, 
-  StyleSheet, 
-  Text, 
-  TouchableOpacity, 
-  View, 
-  Modal, 
-  TextInput,
-  Alert 
-} from 'react-native'
-import axios from 'axios'
 import { useAppTheme } from '@/lib/hooks/useAppTheme'
+import { Ionicons } from '@expo/vector-icons'
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
+import { ActivityIndicator, Alert, Modal, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 
 interface Task {
   id: string
@@ -32,8 +22,9 @@ const Tasks = () => {
   const [taskTitle, setTaskTitle] = useState('')
   const [taskDescription, setTaskDescription] = useState('')
   const [taskPriority, setTaskPriority] = useState<'important' | 'not-important'>('not-important')
+  const [loading, setLoading] = useState(false)
 
-  const API_URL = 'http://localhost:3000/tasks'
+  const API_URL = 'https://3000-firebase-tasklistproject-1763579776324.cluster-gizzoza7hzhfyxzo5d76y3flkw.cloudworkstations.dev/tasks' 
 
   useEffect(() => {
     fetchTasks()
@@ -44,11 +35,18 @@ const Tasks = () => {
   }, [tasks, filter])
 
   const fetchTasks = async () => {
+    setLoading(true)
     try {
+      console.log('Fetching tasks from:', API_URL) // DEBUG
       const response = await axios.get(API_URL)
+      console.log('Tasks fetched:', response.data) // DEBUG
       setTasks(response.data)
-    } catch (error) {
-      Alert.alert('Error', 'No se pudieron cargar las tareas')
+    } catch (error: any) {
+      console.error('Error fetching tasks:', error) // DEBUG
+      // CAMBIO 2: Mensaje de error más detallado
+      Alert.alert('Error', `No se pudieron cargar las tareas: ${error.message}`)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -76,35 +74,55 @@ const Tasks = () => {
       createdAt: new Date().toISOString()
     }
 
+    setLoading(true)
     try {
-      await axios.post(API_URL, newTask)
+      console.log('Creating task:', newTask) // DEBUG
+      const response = await axios.post(API_URL, newTask)
+      console.log('Task created:', response.data) // DEBUG
+      
       setTaskTitle('')
       setTaskDescription('')
       setTaskPriority('not-important')
       setModalVisible(false)
-      fetchTasks()
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo crear la tarea')
+      
+      // Recargar las tareas después de crear una nueva
+      await fetchTasks()
+      
+      Alert.alert('Éxito', 'Tarea creada correctamente')
+    } catch (error: any) {
+      console.error('Error creating task:', error) // DEBUG
+      // CAMBIO 3: Mensaje de error más detallado
+      Alert.alert('Error', `No se pudo crear la tarea: ${error.message}`)
+    } finally {
+      setLoading(false)
     }
   }
 
   const toggleTaskComplete = async (task: Task) => {
+    setLoading(true)
     try {
       await axios.patch(`${API_URL}/${task.id}`, {
         completed: !task.completed
       })
-      fetchTasks()
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo actualizar la tarea')
+      await fetchTasks() // Recargar las tareas
+    } catch (error: any) {
+      console.error('Error updating task:', error)
+      Alert.alert('Error', `No se pudo actualizar la tarea: ${error.message}`)
+    } finally {
+      setLoading(false)
     }
   }
 
   const deleteTask = async (taskId: string) => {
+    setLoading(true)
     try {
       await axios.delete(`${API_URL}/${taskId}`)
-      fetchTasks()
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo eliminar la tarea')
+      await fetchTasks() // Recargar las tareas
+    } catch (error: any) {
+      console.error('Error deleting task:', error)
+      Alert.alert('Error', `No se pudo eliminar la tarea: ${error.message}`)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -121,7 +139,6 @@ const Tasks = () => {
 
   // Función para determinar color de texto contrastante
   const getContrastTextColor = (backgroundColor: string) => {
-    // Para simplificar, asumimos que si el tema es oscuro, el texto debe ser claro y viceversa
     return currentTheme.id === 'dark' || currentTheme.id === 'brawlstars' ? '#FFFFFF' : '#000000'
   }
 
@@ -129,10 +146,22 @@ const Tasks = () => {
     <SafeAreaView style={[styles.container, { backgroundColor: currentTheme.background }]}>
       <View style={[styles.header, { backgroundColor: currentTheme.cardBackground }]}>
         <Text style={[styles.title, { color: currentTheme.text }]}>Mis Tareas</Text>
-        <TouchableOpacity style={styles.addButton} onPress={() => setModalVisible(true)}>
-          <Ionicons name="add-circle" size={32} color={currentTheme.primary} />
+        <TouchableOpacity 
+          style={styles.addButton} 
+          onPress={() => setModalVisible(true)}
+          disabled={loading}
+        >
+          <Ionicons name="add-circle" size={32} color={loading ? currentTheme.textSecondary : currentTheme.primary} />
         </TouchableOpacity>
       </View>
+
+      {/* CAMBIO 4: Indicador de carga */}
+      {loading && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={currentTheme.primary} />
+          <Text style={[styles.loadingText, { color: currentTheme.text }]}>Cargando...</Text>
+        </View>
+      )}
 
       <ScrollView style={styles.content}>
         <View style={styles.filterContainer}>
@@ -143,6 +172,7 @@ const Tasks = () => {
               filter === 'all' && [styles.filterButtonActive, { backgroundColor: currentTheme.primary, borderColor: currentTheme.primary }]
             ]}
             onPress={() => setFilter('all')}
+            disabled={loading}
           >
             <Text style={[
               styles.filterText, 
@@ -152,6 +182,7 @@ const Tasks = () => {
               Todas
             </Text>
           </TouchableOpacity>
+          
           <TouchableOpacity 
             style={[
               styles.filterButton, 
@@ -159,6 +190,7 @@ const Tasks = () => {
               filter === 'pending' && [styles.filterButtonActive, { backgroundColor: currentTheme.primary, borderColor: currentTheme.primary }]
             ]}
             onPress={() => setFilter('pending')}
+            disabled={loading}
           >
             <Text style={[
               styles.filterText, 
@@ -168,6 +200,7 @@ const Tasks = () => {
               Pendientes
             </Text>
           </TouchableOpacity>
+          
           <TouchableOpacity 
             style={[
               styles.filterButton, 
@@ -175,6 +208,7 @@ const Tasks = () => {
               filter === 'completed' && [styles.filterButtonActive, { backgroundColor: currentTheme.primary, borderColor: currentTheme.primary }]
             ]}
             onPress={() => setFilter('completed')}
+            disabled={loading}
           >
             <Text style={[
               styles.filterText, 
@@ -186,7 +220,12 @@ const Tasks = () => {
           </TouchableOpacity>
         </View>
 
-        {filteredTasks.length === 0 ? (
+        {loading ? (
+          <View style={styles.emptyState}>
+            <ActivityIndicator size="large" color={currentTheme.primary} />
+            <Text style={[styles.emptyTitle, { color: currentTheme.text }]}>Cargando tareas...</Text>
+          </View>
+        ) : filteredTasks.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="checkbox-outline" size={80} color={currentTheme.textSecondary} />
             <Text style={[styles.emptyTitle, { color: currentTheme.text }]}>No hay tareas</Text>
@@ -196,6 +235,7 @@ const Tasks = () => {
             <TouchableOpacity 
               style={[styles.emptyButton, { backgroundColor: currentTheme.primary }]} 
               onPress={() => setModalVisible(true)}
+              disabled={loading}
             >
               <Ionicons name="add" size={20} color={getContrastTextColor(currentTheme.primary)} />
               <Text style={[styles.emptyButtonText, { color: getContrastTextColor(currentTheme.primary) }]}>Crear Tarea</Text>
@@ -208,6 +248,7 @@ const Tasks = () => {
                 <TouchableOpacity 
                   style={styles.taskLeft}
                   onPress={() => toggleTaskComplete(task)}
+                  disabled={loading}
                 >
                   <Ionicons 
                     name={task.completed ? "checkmark-circle" : "ellipse-outline"} 
@@ -245,8 +286,9 @@ const Tasks = () => {
                 <TouchableOpacity 
                   style={styles.deleteButton}
                   onPress={() => confirmDelete(task.id)}
+                  disabled={loading}
                 >
-                  <Ionicons name="trash-outline" size={20} color={currentTheme.error} />
+                  <Ionicons name="trash-outline" size={20} color={loading ? currentTheme.textSecondary : currentTheme.error} />
                 </TouchableOpacity>
               </View>
             ))}
@@ -258,14 +300,17 @@ const Tasks = () => {
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        onRequestClose={() => !loading && setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: currentTheme.cardBackground }]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: currentTheme.text }]}>Nueva Tarea</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Ionicons name="close" size={28} color={currentTheme.textSecondary} />
+              <TouchableOpacity 
+                onPress={() => !loading && setModalVisible(false)}
+                disabled={loading}
+              >
+                <Ionicons name="close" size={28} color={loading ? currentTheme.textSecondary : currentTheme.textSecondary} />
               </TouchableOpacity>
             </View>
 
@@ -282,6 +327,7 @@ const Tasks = () => {
               placeholderTextColor={currentTheme.textSecondary}
               value={taskTitle}
               onChangeText={setTaskTitle}
+              editable={!loading}
             />
 
             <TextInput
@@ -300,6 +346,7 @@ const Tasks = () => {
               onChangeText={setTaskDescription}
               multiline
               numberOfLines={4}
+              editable={!loading}
             />
 
             <Text style={[styles.label, { color: currentTheme.text }]}>Prioridad</Text>
@@ -313,7 +360,8 @@ const Tasks = () => {
                     { backgroundColor: currentTheme.error, borderColor: currentTheme.error }
                   ]
                 ]}
-                onPress={() => setTaskPriority('important')}
+                onPress={() => !loading && setTaskPriority('important')}
+                disabled={loading}
               >
                 <Ionicons 
                   name="alert-circle" 
@@ -337,7 +385,8 @@ const Tasks = () => {
                     { backgroundColor: currentTheme.primary, borderColor: currentTheme.primary }
                   ]
                 ]}
-                onPress={() => setTaskPriority('not-important')}
+                onPress={() => !loading && setTaskPriority('not-important')}
+                disabled={loading}
               >
                 <Ionicons 
                   name="information-circle" 
@@ -354,10 +403,23 @@ const Tasks = () => {
             </View>
 
             <TouchableOpacity 
-              style={[styles.createButton, { backgroundColor: currentTheme.primary }]} 
+              style={[
+                styles.createButton, 
+                { 
+                  backgroundColor: loading ? currentTheme.textSecondary : currentTheme.primary,
+                  opacity: loading ? 0.6 : 1
+                }
+              ]} 
               onPress={createTask}
+              disabled={loading}
             >
-              <Text style={[styles.createButtonText, { color: getContrastTextColor(currentTheme.primary) }]}>Crear Tarea</Text>
+              {loading ? (
+                <ActivityIndicator color={getContrastTextColor(currentTheme.primary)} />
+              ) : (
+                <Text style={[styles.createButtonText, { color: getContrastTextColor(currentTheme.primary) }]}>
+                  Crear Tarea
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </View>
@@ -366,7 +428,6 @@ const Tasks = () => {
   )
 }
 
-// Los estilos se mantienen igual que en la versión anterior
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -386,6 +447,18 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  // CAMBIO 5: Estilos para el indicador de carga
+  loadingContainer: {
+    padding: 16,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
   filterContainer: {
     flexDirection: 'row',
@@ -556,6 +629,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 54,
   },
   createButtonText: {
     fontSize: 16,
