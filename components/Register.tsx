@@ -1,6 +1,7 @@
-import { Ionicons } from '@expo/vector-icons'
-import React from 'react'
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { useAppTheme } from '@/lib/hooks/useAppTheme'; // Importamos el hook del tema
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface RegisterProps {
   onNavigateToLogin: () => void
@@ -8,36 +9,55 @@ interface RegisterProps {
 }
 
 const Register = ({ onNavigateToLogin, onRegister }: RegisterProps) => {
+  const { currentTheme } = useAppTheme() // Obtenemos el tema actual
+
+  // Función para determinar color de texto contrastante
+  const getContrastTextColor = (backgroundColor: string) => {
+    return currentTheme.id === 'dark' || currentTheme.id === 'brawlstars' ? '#FFFFFF' : '#000000'
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: currentTheme.background }]}>
       <View style={styles.header}>
-        <Ionicons name="checkbox-outline" size={72} color="#007AFF" />
-        <Text style={styles.title}>Crear Cuenta</Text>
-        <Text style={styles.subtitle}>Únete a Tasklist y organiza tu vida</Text>
+        <Ionicons name="checkbox-outline" size={72} color={currentTheme.primary} />
+        <Text style={[styles.title, { color: currentTheme.text }]}>Crear Cuenta</Text>
+        <Text style={[styles.subtitle, { color: currentTheme.textSecondary }]}>Únete a Tasklist y organiza tu vida</Text>
       </View>
 
       <View style={styles.form}>
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Nombre completo</Text>
-          <View style={styles.inputWrapper}>
-            <Ionicons name="person-outline" size={20} color="#666" style={styles.inputIcon} />
+          <Text style={[styles.label, { color: currentTheme.text }]}>Nombre completo</Text>
+          <View style={[
+            styles.inputWrapper, 
+            { 
+              backgroundColor: currentTheme.surface, 
+              borderColor: currentTheme.divider 
+            }
+          ]}>
+            <Ionicons name="person-outline" size={20} color={currentTheme.textSecondary} style={styles.inputIcon} />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { color: currentTheme.text }]}
               placeholder="Tu nombre"
-              placeholderTextColor="#999"
+              placeholderTextColor={currentTheme.textSecondary}
               autoCapitalize="words"
             />
           </View>
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Correo electrónico</Text>
-          <View style={styles.inputWrapper}>
-            <Ionicons name="mail-outline" size={20} color="#666" style={styles.inputIcon} />
+          <Text style={[styles.label, { color: currentTheme.text }]}>Correo electrónico</Text>
+          <View style={[
+            styles.inputWrapper, 
+            { 
+              backgroundColor: currentTheme.surface, 
+              borderColor: currentTheme.divider 
+            }
+          ]}>
+            <Ionicons name="mail-outline" size={20} color={currentTheme.textSecondary} style={styles.inputIcon} />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { color: currentTheme.text }]}
               placeholder="tu@email.com"
-              placeholderTextColor="#999"
+              placeholderTextColor={currentTheme.textSecondary}
               keyboardType="email-address"
               autoCapitalize="none"
             />
@@ -45,59 +65,82 @@ const Register = ({ onNavigateToLogin, onRegister }: RegisterProps) => {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Contraseña</Text>
-          <View style={styles.inputWrapper}>
-            <Ionicons name="lock-closed-outline" size={20} color="#666" style={styles.inputIcon} />
+          <Text style={[styles.label, { color: currentTheme.text }]}>Contraseña</Text>
+          <View style={[
+            styles.inputWrapper, 
+            { 
+              backgroundColor: currentTheme.surface, 
+              borderColor: currentTheme.divider 
+            }
+          ]}>
+            <Ionicons name="lock-closed-outline" size={20} color={currentTheme.textSecondary} style={styles.inputIcon} />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { color: currentTheme.text }]}
               placeholder="Mínimo 8 caracteres"
-              placeholderTextColor="#999"
+              placeholderTextColor={currentTheme.textSecondary}
               secureTextEntry
             />
           </View>
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Confirmar contraseña</Text>
-          <View style={styles.inputWrapper}>
-            <Ionicons name="lock-closed-outline" size={20} color="#666" style={styles.inputIcon} />
+          <Text style={[styles.label, { color: currentTheme.text }]}>Confirmar contraseña</Text>
+          <View style={[
+            styles.inputWrapper, 
+            { 
+              backgroundColor: currentTheme.surface, 
+              borderColor: currentTheme.divider 
+            }
+          ]}>
+            <Ionicons name="lock-closed-outline" size={20} color={currentTheme.textSecondary} style={styles.inputIcon} />
             <TextInput
-              style={styles.input}
+              style={[styles.input, { color: currentTheme.text }]}
               placeholder="Repite tu contraseña"
-              placeholderTextColor="#999"
+              placeholderTextColor={currentTheme.textSecondary}
               secureTextEntry
             />
           </View>
         </View>
 
-        <TouchableOpacity style={styles.registerButton} onPress={onRegister}>
-          <Text style={styles.registerButtonText}>Crear Cuenta</Text>
+        <TouchableOpacity 
+          style={[styles.registerButton, { backgroundColor: currentTheme.primary }]} 
+          onPress={onRegister}
+        >
+          <Text style={[styles.registerButtonText, { color: getContrastTextColor(currentTheme.primary) }]}>
+            Crear Cuenta
+          </Text>
         </TouchableOpacity>
 
         <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>O</Text>
-          <View style={styles.dividerLine} />
+          <View style={[styles.dividerLine, { backgroundColor: currentTheme.divider }]} />
+          <Text style={[styles.dividerText, { color: currentTheme.textSecondary }]}>O</Text>
+          <View style={[styles.dividerLine, { backgroundColor: currentTheme.divider }]} />
         </View>
 
-        <TouchableOpacity style={styles.googleButton}>
-          <Ionicons name="logo-google" size={20} color="#1a1a1a" style={styles.googleIcon} />
-          <Text style={styles.googleButtonText}>Registrarse con Google</Text>
+        <TouchableOpacity style={[
+          styles.googleButton, 
+          { 
+            backgroundColor: currentTheme.surface, 
+            borderColor: currentTheme.divider 
+          }
+        ]}>
+          <Ionicons name="logo-google" size={20} color={currentTheme.text} style={styles.googleIcon} />
+          <Text style={[styles.googleButtonText, { color: currentTheme.text }]}>Registrarse con Google</Text>
         </TouchableOpacity>
 
         <View style={styles.terms}>
-          <Text style={styles.termsText}>
-            Al registrarte, aceptas nuestros{' '}
-            <Text style={styles.termsLink}>Términos de Servicio</Text>
-            {' '}y{' '}
-            <Text style={styles.termsLink}>Política de Privacidad</Text>
+          <Text style={[styles.termsText, { color: currentTheme.textSecondary }]}>
+            Al registrarte, aceptas vender tu{' '}
+            <Text style={[styles.termsLink, { color: currentTheme.primary }]}>ALMA</Text>
+            {' '}a{' '}
+            <Text style={[styles.termsLink, { color: currentTheme.primary }]}>XimenchOf</Text>
           </Text>
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>¿Ya tienes cuenta? </Text>
+          <Text style={[styles.footerText, { color: currentTheme.textSecondary }]}>¿Ya tienes cuenta? </Text>
           <TouchableOpacity onPress={onNavigateToLogin}>
-            <Text style={styles.loginText}>Inicia Sesión</Text>
+            <Text style={[styles.loginText, { color: currentTheme.primary }]}>Inicia Sesión</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -108,7 +151,6 @@ const Register = ({ onNavigateToLogin, onRegister }: RegisterProps) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    backgroundColor: '#fff',
     paddingHorizontal: 24,
     paddingVertical: 40,
     justifyContent: 'center',
@@ -120,13 +162,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#1a1a1a',
     marginTop: 16,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
     textAlign: 'center',
   },
   form: {
@@ -138,16 +178,13 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1a1a1a',
     marginBottom: 8,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#e0e0e0',
     paddingHorizontal: 16,
   },
   inputIcon: {
@@ -157,10 +194,8 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     fontSize: 16,
-    color: '#1a1a1a',
   },
   registerButton: {
-    backgroundColor: '#007AFF',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
@@ -168,7 +203,6 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   registerButtonText: {
-    color: '#fff',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -180,29 +214,24 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#e0e0e0',
   },
   dividerText: {
-    color: '#999',
     paddingHorizontal: 16,
     fontSize: 14,
   },
   googleButton: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#e0e0e0',
     marginBottom: 24,
   },
   googleIcon: {
     marginRight: 8,
   },
   googleButtonText: {
-    color: '#1a1a1a',
     fontSize: 16,
     fontWeight: '600',
   },
@@ -212,12 +241,10 @@ const styles = StyleSheet.create({
   },
   termsText: {
     fontSize: 12,
-    color: '#666',
     textAlign: 'center',
     lineHeight: 18,
   },
   termsLink: {
-    color: '#007AFF',
     fontWeight: '500',
   },
   footer: {
@@ -227,11 +254,9 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
-    color: '#666',
   },
   loginText: {
     fontSize: 14,
-    color: '#007AFF',
     fontWeight: '600',
   },
 })

@@ -1,13 +1,20 @@
 {
-    "posts": [
-      { "id": "1", "title": "a title", "views": 100 },
-      { "id": "2", "title": "another title", "views": 200 }
-    ],
-    "comments": [
-      { "id": "1", "text": "a comment about post 1", "postId": "1" },
-      { "id": "2", "text": "another comment about post 1", "postId": "1" }
-    ],
-    "profile": {
-      "name": "typicode"
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Completar proyecto de React Native",
+      "description": "Finalizar la aplicación de Tasklist",
+      "priority": "important",
+      "completed": false,
+      "createdAt": "2024-11-24T10:00:00.000Z"
+    },
+    {
+      "id": "2",
+      "title": "Revisar correos",
+      "description": "Responder correos pendientes del trabajo",
+      "priority": "not-important",
+      "completed": false,
+      "createdAt": "2024-11-24T11:00:00.000Z"
     }
-  }
+  ]
+}
