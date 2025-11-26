@@ -173,13 +173,49 @@ export const sonicTheme = {
   }
 };
 
+export const fnfTheme = {
+  id: 'fnf',
+  name: 'Friday Night Funkin',
+
+  background: '#1A1A2E', // Azul noche oscuro
+  surface: '#16213E', // Azul medio
+
+  primary: '#E94560', // Rosa rojizo (color de las flechas)
+  secondary: '#0F3460', // Azul oscuro
+
+  success: '#00E874', // Verde brillante (combo perfecto)
+  warning: '#FFD166', // Amarillo (advertencia)
+  error: '#EF476F', // Rosa fuerte (fallo)
+
+  text: '#FFFFFF',
+  textSecondary: '#B8B8D1',
+
+  border: '#E94560', // Borde rosa
+  divider: '#2D3748',
+
+  tabBarBackground: '#1A1A2E',
+  tabBarBorder: '#E94560',
+
+  cardBackground: '#16213E',
+  cardShadow: 'rgba(233, 69, 96, 0.3)',
+
+  badgeColors: {
+    blue: '#4CC9F0', // Azul cielo
+    red: '#E94560', // Rosa rojizo
+    orange: '#FF9E64', // Naranja
+    green: '#00E874', // Verde brillante
+    purple: '#7209B7', // Púrpura
+  }
+};
+
 // Actualizar el objeto themes
 export const themes = {
   light: lightTheme,
   dark: darkTheme,
   brawlstars: brawlStarsTheme,
   pvz: pvzTheme,
-  sonic: sonicTheme, // ← Nuevo tema agregado
+  sonic: sonicTheme,
+  fnf: fnfTheme, // ← Nuevo tema agregado
 };
 
 export type ThemeId = keyof typeof themes;

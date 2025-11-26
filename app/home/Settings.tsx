@@ -44,6 +44,12 @@ const Settings = () => {
       icon: 'flash',
       colors: ['#1E3A8A', '#FF0000', '#FBBF24']
     },
+    { 
+      id: 'fnf', 
+      name: 'Friday Night Funkin', 
+      icon: 'musical-notes',
+      colors: ['#1A1A2E', '#E94560', '#00E874']
+    },
   ]
 
   return (
@@ -171,8 +177,8 @@ const styles = StyleSheet.create({
   },
   header: {
     padding: 24,
-    borderBottomLeftRadius: 24, // Más redondeado
-    borderBottomRightRadius: 24, // Más redondeado
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
   },
   title: {
     fontSize: 32,
@@ -192,7 +198,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   themesContainer: {
-    borderRadius: 20, // Más redondeado
+    borderRadius: 20,
     padding: 16,
     gap: 12,
   },
@@ -200,7 +206,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    borderRadius: 16, // Más redondeado
+    borderRadius: 16,
     borderWidth: 2,
     borderColor: 'transparent',
     position: 'relative',
@@ -213,7 +219,7 @@ const styles = StyleSheet.create({
   colorBlock: {
     width: 24,
     height: 24,
-    borderRadius: 8, // Más redondeado
+    borderRadius: 8,
   },
   themeInfo: {
     flexDirection: 'row',
@@ -236,9 +242,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 18, // Más padding
+    padding: 18,
     marginBottom: 8,
-    borderRadius: 16, // Mucho más redondeado
+    borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -266,7 +272,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 32,
     marginBottom: 32,
-    borderRadius: 16, // Más redondeado
+    borderRadius: 16,
     gap: 12,
     shadowColor: '#000',
     shadowOffset: {

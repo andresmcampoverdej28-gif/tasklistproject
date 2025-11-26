@@ -37,13 +37,12 @@ const Tasks = () => {
   const fetchTasks = async () => {
     setLoading(true)
     try {
-      console.log('Fetching tasks from:', API_URL) // DEBUG
+      console.log('Fetching tasks from:', API_URL)
       const response = await axios.get(API_URL)
-      console.log('Tasks fetched:', response.data) // DEBUG
+      console.log('Tasks fetched:', response.data)
       setTasks(response.data)
     } catch (error: any) {
-      console.error('Error fetching tasks:', error) // DEBUG
-      // CAMBIO 2: Mensaje de error más detallado
+      console.error('Error fetching tasks:', error)
       Alert.alert('Error', `No se pudieron cargar las tareas: ${error.message}`)
     } finally {
       setLoading(false)
@@ -76,22 +75,20 @@ const Tasks = () => {
 
     setLoading(true)
     try {
-      console.log('Creating task:', newTask) // DEBUG
+      console.log('Creating task:', newTask)
       const response = await axios.post(API_URL, newTask)
-      console.log('Task created:', response.data) // DEBUG
+      console.log('Task created:', response.data)
       
       setTaskTitle('')
       setTaskDescription('')
       setTaskPriority('not-important')
       setModalVisible(false)
       
-      // Recargar las tareas después de crear una nueva
       await fetchTasks()
       
       Alert.alert('Éxito', 'Tarea creada correctamente')
     } catch (error: any) {
-      console.error('Error creating task:', error) // DEBUG
-      // CAMBIO 3: Mensaje de error más detallado
+      console.error('Error creating task:', error)
       Alert.alert('Error', `No se pudo crear la tarea: ${error.message}`)
     } finally {
       setLoading(false)
@@ -104,7 +101,7 @@ const Tasks = () => {
       await axios.patch(`${API_URL}/${task.id}`, {
         completed: !task.completed
       })
-      await fetchTasks() // Recargar las tareas
+      await fetchTasks()
     } catch (error: any) {
       console.error('Error updating task:', error)
       Alert.alert('Error', `No se pudo actualizar la tarea: ${error.message}`)
@@ -117,7 +114,7 @@ const Tasks = () => {
     setLoading(true)
     try {
       await axios.delete(`${API_URL}/${taskId}`)
-      await fetchTasks() // Recargar las tareas
+      await fetchTasks()
     } catch (error: any) {
       console.error('Error deleting task:', error)
       Alert.alert('Error', `No se pudo eliminar la tarea: ${error.message}`)
@@ -144,18 +141,12 @@ const Tasks = () => {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: currentTheme.background }]}>
+      {/* HEADER SIN BOTÓN */}
       <View style={[styles.header, { backgroundColor: currentTheme.cardBackground }]}>
         <Text style={[styles.title, { color: currentTheme.text }]}>Mis Tareas</Text>
-        <TouchableOpacity 
-          style={styles.addButton} 
-          onPress={() => setModalVisible(true)}
-          disabled={loading}
-        >
-          <Ionicons name="add-circle" size={32} color={loading ? currentTheme.textSecondary : currentTheme.primary} />
-        </TouchableOpacity>
       </View>
 
-      {/* CAMBIO 4: Indicador de carga */}
+      {/* INDICADOR DE CARGA */}
       {loading && (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={currentTheme.primary} />
@@ -296,6 +287,25 @@ const Tasks = () => {
         )}
       </ScrollView>
 
+      {/* BOTÓN FLOTANTE EN LA PARTE INFERIOR */}
+      <TouchableOpacity 
+        style={[
+          styles.floatingButton,
+          { 
+            backgroundColor: currentTheme.primary,
+            shadowColor: currentTheme.primary
+          }
+        ]}
+        onPress={() => setModalVisible(true)}
+        disabled={loading}
+      >
+        <Ionicons 
+          name="add" 
+          size={28} 
+          color={getContrastTextColor(currentTheme.primary)} 
+        />
+      </TouchableOpacity>
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -433,22 +443,35 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     padding: 24,
+    alignItems: 'center', // Centramos el título
   },
   title: {
     fontSize: 32,
     fontWeight: 'bold',
   },
-  addButton: {
-    padding: 4,
-  },
   content: {
     flex: 1,
+    marginBottom: 80, // Espacio para el botón flotante
   },
-  // CAMBIO 5: Estilos para el indicador de carga
+  // BOTÓN FLOTANTE
+  floatingButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
   loadingContainer: {
     padding: 16,
     alignItems: 'center',

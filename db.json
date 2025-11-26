@@ -5,7 +5,7 @@
       "title": "Completar proyecto de React Native",
       "description": "Finalizar la aplicación de Tasklist",
       "priority": "important",
-      "completed": false,
+      "completed": true,
       "createdAt": "2024-11-24T10:00:00.000Z"
     }
   ]
