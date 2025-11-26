@@ -1,7 +1,8 @@
+import { useAppTheme } from '@/lib/hooks/useAppTheme'
+import { loginSchema, type LoginSchema } from '@/lib/schemas/auth.schema'
 import { Ionicons } from '@expo/vector-icons'
-import React from 'react'
+import React, { useState } from 'react'
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { useAppTheme } from '@/lib/hooks/useAppTheme' // Importamos el hook del tema
 
 interface LoginProps {
   onNavigateToRegister: () => void
@@ -9,7 +10,46 @@ interface LoginProps {
 }
 
 const Login = ({ onNavigateToRegister, onLogin }: LoginProps) => {
-  const { currentTheme } = useAppTheme() // Obtenemos el tema actual
+  const { currentTheme } = useAppTheme()
+  const [formData, setFormData] = useState<LoginSchema>({
+    email: '',
+    password: '',
+  })
+  const [errors, setErrors] = useState<Partial<LoginSchema>>({})
+
+  const handleInputChange = (field: keyof LoginSchema, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }))
+    // Limpiar error del campo cuando el usuario empiece a escribir
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }))
+    }
+  }
+
+  const handleSubmit = () => {
+    // Usar safeParse en lugar de parse para manejar errores mejor
+    const result = loginSchema.safeParse(formData)
+    
+    if (result.success) {
+      // Si la validación pasa, limpiar errores y proceder
+      setErrors({})
+      console.log('Datos válidos:', formData)
+      onLogin()
+    } else {
+      // Si hay errores de validación, mostrarlos
+      const newErrors: Partial<LoginSchema> = {}
+      result.error.issues.forEach((issue) => { // Cambié "errors" por "issues"
+        const field = issue.path[0] as keyof LoginSchema
+        newErrors[field] = issue.message
+      })
+      setErrors(newErrors)
+    }
+  }
 
   // Función para determinar color de texto contrastante
   const getContrastTextColor = (backgroundColor: string) => {
@@ -25,52 +65,82 @@ const Login = ({ onNavigateToRegister, onLogin }: LoginProps) => {
       </View>
 
       <View style={styles.form}>
+        {/* Campo Email */}
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: currentTheme.text }]}>Correo electrónico</Text>
           <View style={[
             styles.inputWrapper, 
             { 
               backgroundColor: currentTheme.surface, 
-              borderColor: currentTheme.divider 
+              borderColor: errors.email ? currentTheme.error : currentTheme.divider,
+              borderWidth: errors.email ? 2 : 1,
             }
           ]}>
-            <Ionicons name="mail-outline" size={20} color={currentTheme.textSecondary} style={styles.inputIcon} />
+            <Ionicons 
+              name="mail-outline" 
+              size={20} 
+              color={errors.email ? currentTheme.error : currentTheme.textSecondary} 
+              style={styles.inputIcon} 
+            />
             <TextInput
               style={[styles.input, { color: currentTheme.text }]}
               placeholder="tu@email.com"
               placeholderTextColor={currentTheme.textSecondary}
               keyboardType="email-address"
               autoCapitalize="none"
+              value={formData.email}
+              onChangeText={(value) => handleInputChange('email', value)}
             />
           </View>
+          {errors.email && (
+            <Text style={[styles.errorText, { color: currentTheme.error }]}>
+              {errors.email}
+            </Text>
+          )}
         </View>
 
+        {/* Campo Contraseña */}
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: currentTheme.text }]}>Contraseña</Text>
           <View style={[
             styles.inputWrapper, 
             { 
               backgroundColor: currentTheme.surface, 
-              borderColor: currentTheme.divider 
+              borderColor: errors.password ? currentTheme.error : currentTheme.divider,
+              borderWidth: errors.password ? 2 : 1,
             }
           ]}>
-            <Ionicons name="lock-closed-outline" size={20} color={currentTheme.textSecondary} style={styles.inputIcon} />
+            <Ionicons 
+              name="lock-closed-outline" 
+              size={20} 
+              color={errors.password ? currentTheme.error : currentTheme.textSecondary} 
+              style={styles.inputIcon} 
+            />
             <TextInput
               style={[styles.input, { color: currentTheme.text }]}
               placeholder="••••••••"
               placeholderTextColor={currentTheme.textSecondary}
               secureTextEntry
+              value={formData.password}
+              onChangeText={(value) => handleInputChange('password', value)}
             />
           </View>
+          {errors.password && (
+            <Text style={[styles.errorText, { color: currentTheme.error }]}>
+              {errors.password}
+            </Text>
+          )}
         </View>
 
         <TouchableOpacity style={styles.forgotPassword}>
-          <Text style={[styles.forgotPasswordText, { color: currentTheme.primary }]}>¿Olvidaste tu contraseña?</Text>
+          <Text style={[styles.forgotPasswordText, { color: currentTheme.primary }]}>
+            ¿Olvidaste tu contraseña?
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity 
           style={[styles.loginButton, { backgroundColor: currentTheme.primary }]} 
-          onPress={onLogin}
+          onPress={handleSubmit}
         >
           <Text style={[styles.loginButtonText, { color: getContrastTextColor(currentTheme.primary) }]}>
             Iniciar Sesión
@@ -139,7 +209,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderRadius: 12,
-    borderWidth: 1,
     paddingHorizontal: 16,
   },
   inputIcon: {
@@ -149,6 +218,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     fontSize: 16,
+  },
+  errorText: {
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
+    fontWeight: '500',
   },
   forgotPassword: {
     alignSelf: 'flex-end',

@@ -1,6 +1,7 @@
-import { useAppTheme } from '@/lib/hooks/useAppTheme'; // Importamos el hook del tema
+import { useAppTheme } from '@/lib/hooks/useAppTheme';
+import { registerSchema, type RegisterSchema } from '@/lib/schemas/auth.schema';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface RegisterProps {
@@ -9,12 +10,55 @@ interface RegisterProps {
 }
 
 const Register = ({ onNavigateToLogin, onRegister }: RegisterProps) => {
-  const { currentTheme } = useAppTheme() // Obtenemos el tema actual
+  const { currentTheme } = useAppTheme();
+  
+  const [formData, setFormData] = useState<RegisterSchema>({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+  
+  const [errors, setErrors] = useState<Partial<RegisterSchema>>({});
+
+  const handleInputChange = (field: keyof RegisterSchema, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    // Limpiar error del campo cuando el usuario empiece a escribir
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
+    }
+  };
+
+  const handleSubmit = () => {
+    // Usar safeParse para validar
+    const result = registerSchema.safeParse(formData);
+    
+    if (result.success) {
+      // Si la validación pasa, limpiar errores y proceder
+      setErrors({});
+      console.log('Datos válidos:', formData);
+      onRegister();
+    } else {
+      // Si hay errores de validación, mostrarlos
+      const newErrors: Partial<RegisterSchema> = {};
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof RegisterSchema;
+        newErrors[field] = issue.message;
+      });
+      setErrors(newErrors);
+    }
+  };
 
   // Función para determinar color de texto contrastante
   const getContrastTextColor = (backgroundColor: string) => {
-    return currentTheme.id === 'dark' || currentTheme.id === 'brawlstars' ? '#FFFFFF' : '#000000'
-  }
+    return currentTheme.id === 'dark' || currentTheme.id === 'brawlstars' ? '#FFFFFF' : '#000000';
+  };
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: currentTheme.background }]}>
@@ -25,86 +69,142 @@ const Register = ({ onNavigateToLogin, onRegister }: RegisterProps) => {
       </View>
 
       <View style={styles.form}>
+        {/* Campo Nombre */}
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: currentTheme.text }]}>Nombre completo</Text>
           <View style={[
             styles.inputWrapper, 
             { 
               backgroundColor: currentTheme.surface, 
-              borderColor: currentTheme.divider 
+              borderColor: errors.name ? currentTheme.error : currentTheme.divider,
+              borderWidth: errors.name ? 2 : 1,
             }
           ]}>
-            <Ionicons name="person-outline" size={20} color={currentTheme.textSecondary} style={styles.inputIcon} />
+            <Ionicons 
+              name="person-outline" 
+              size={20} 
+              color={errors.name ? currentTheme.error : currentTheme.textSecondary} 
+              style={styles.inputIcon} 
+            />
             <TextInput
               style={[styles.input, { color: currentTheme.text }]}
               placeholder="Tu nombre"
               placeholderTextColor={currentTheme.textSecondary}
               autoCapitalize="words"
+              value={formData.name}
+              onChangeText={(value) => handleInputChange('name', value)}
             />
           </View>
+          {errors.name && (
+            <Text style={[styles.errorText, { color: currentTheme.error }]}>
+              {errors.name}
+            </Text>
+          )}
         </View>
 
+        {/* Campo Email */}
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: currentTheme.text }]}>Correo electrónico</Text>
           <View style={[
             styles.inputWrapper, 
             { 
               backgroundColor: currentTheme.surface, 
-              borderColor: currentTheme.divider 
+              borderColor: errors.email ? currentTheme.error : currentTheme.divider,
+              borderWidth: errors.email ? 2 : 1,
             }
           ]}>
-            <Ionicons name="mail-outline" size={20} color={currentTheme.textSecondary} style={styles.inputIcon} />
+            <Ionicons 
+              name="mail-outline" 
+              size={20} 
+              color={errors.email ? currentTheme.error : currentTheme.textSecondary} 
+              style={styles.inputIcon} 
+            />
             <TextInput
               style={[styles.input, { color: currentTheme.text }]}
               placeholder="tu@email.com"
               placeholderTextColor={currentTheme.textSecondary}
               keyboardType="email-address"
               autoCapitalize="none"
+              value={formData.email}
+              onChangeText={(value) => handleInputChange('email', value)}
             />
           </View>
+          {errors.email && (
+            <Text style={[styles.errorText, { color: currentTheme.error }]}>
+              {errors.email}
+            </Text>
+          )}
         </View>
 
+        {/* Campo Contraseña */}
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: currentTheme.text }]}>Contraseña</Text>
           <View style={[
             styles.inputWrapper, 
             { 
               backgroundColor: currentTheme.surface, 
-              borderColor: currentTheme.divider 
+              borderColor: errors.password ? currentTheme.error : currentTheme.divider,
+              borderWidth: errors.password ? 2 : 1,
             }
           ]}>
-            <Ionicons name="lock-closed-outline" size={20} color={currentTheme.textSecondary} style={styles.inputIcon} />
+            <Ionicons 
+              name="lock-closed-outline" 
+              size={20} 
+              color={errors.password ? currentTheme.error : currentTheme.textSecondary} 
+              style={styles.inputIcon} 
+            />
             <TextInput
               style={[styles.input, { color: currentTheme.text }]}
               placeholder="Mínimo 8 caracteres"
               placeholderTextColor={currentTheme.textSecondary}
               secureTextEntry
+              value={formData.password}
+              onChangeText={(value) => handleInputChange('password', value)}
             />
           </View>
+          {errors.password && (
+            <Text style={[styles.errorText, { color: currentTheme.error }]}>
+              {errors.password}
+            </Text>
+          )}
         </View>
 
+        {/* Campo Confirmar Contraseña */}
         <View style={styles.inputContainer}>
           <Text style={[styles.label, { color: currentTheme.text }]}>Confirmar contraseña</Text>
           <View style={[
             styles.inputWrapper, 
             { 
               backgroundColor: currentTheme.surface, 
-              borderColor: currentTheme.divider 
+              borderColor: errors.confirmPassword ? currentTheme.error : currentTheme.divider,
+              borderWidth: errors.confirmPassword ? 2 : 1,
             }
           ]}>
-            <Ionicons name="lock-closed-outline" size={20} color={currentTheme.textSecondary} style={styles.inputIcon} />
+            <Ionicons 
+              name="lock-closed-outline" 
+              size={20} 
+              color={errors.confirmPassword ? currentTheme.error : currentTheme.textSecondary} 
+              style={styles.inputIcon} 
+            />
             <TextInput
               style={[styles.input, { color: currentTheme.text }]}
               placeholder="Repite tu contraseña"
               placeholderTextColor={currentTheme.textSecondary}
               secureTextEntry
+              value={formData.confirmPassword}
+              onChangeText={(value) => handleInputChange('confirmPassword', value)}
             />
           </View>
+          {errors.confirmPassword && (
+            <Text style={[styles.errorText, { color: currentTheme.error }]}>
+              {errors.confirmPassword}
+            </Text>
+          )}
         </View>
 
         <TouchableOpacity 
           style={[styles.registerButton, { backgroundColor: currentTheme.primary }]} 
-          onPress={onRegister}
+          onPress={handleSubmit}
         >
           <Text style={[styles.registerButtonText, { color: getContrastTextColor(currentTheme.primary) }]}>
             Crear Cuenta
@@ -145,8 +245,8 @@ const Register = ({ onNavigateToLogin, onRegister }: RegisterProps) => {
         </View>
       </View>
     </ScrollView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -194,6 +294,12 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     fontSize: 16,
+  },
+  errorText: {
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
+    fontWeight: '500',
   },
   registerButton: {
     borderRadius: 12,
@@ -259,6 +365,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-})
+});
 
-export default Register
+export default Register;
